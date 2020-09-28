@@ -1,1 +1,1 @@
-# parscoin
+# ParsCoin

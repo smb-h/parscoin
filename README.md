@@ -1,3 +1,6 @@
 # ParsCoin
 
-digital coin :)
+ParsCoin is a digital coin :)
+- Cryptocurrency Blockchain
+
+

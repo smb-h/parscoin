@@ -1,52 +1,74 @@
 import hashlib
 import time
+import datetime
 
 
+# Block
 class Block:
 
-    def __init__(self, index, proof_no, prev_hash, data, timestamp=None):
+    # Initial
+    def __init__(self, index, proof_no, prev_hash, data, timestamp = None):
+        # position of the block within the blockchain
         self.index = index
+        # the number produced during the creation of a new block (called mining)
         self.proof_no = proof_no
+        # refers to the hash of the previous block within the chain
         self.prev_hash = prev_hash
+        # gives a record of all transactions completed, such as the quantity bought
         self.data = data
+        # places a timestamp for the transactions
         self.timestamp = timestamp or time.time()
 
+    # Calculate hash
     @property
     def calculate_hash(self):
-        block_of_string = "{}{}{}{}{}".format(self.index, self.proof_no,
-                                              self.prev_hash, self.data,
-                                              self.timestamp)
+        block_of_string = "{}{}{}{}{}".format(
+                                                self.index, self.proof_no,
+                                                self.prev_hash, self.data,
+                                                self.timestamp
+                                            )
 
         return hashlib.sha256(block_of_string.encode()).hexdigest()
 
+    # repr
     def __repr__(self):
-        return "{} - {} - {} - {} - {}".format(self.index, self.proof_no,
-                                               self.prev_hash, self.data,
-                                               self.timestamp)
+        return "{} - {} - {} - {} - {}".format(
+                                                self.index, self.proof_no,
+                                                self.prev_hash, self.data,
+                                                self.timestamp
+                                               )
 
 
+# Chaining blocks
 class BlockChain:
 
+    # Initial
     def __init__(self):
+        # keeps all blocks
         self.chain = []
+        # keeps all the completed transactions in the block
         self.current_data = []
         self.nodes = set()
+        # initial block
         self.construct_genesis()
 
+    # Initial block
     def construct_genesis(self):
-        self.construct_block(proof_no=0, prev_hash=0)
+        self.construct_block(proof_no = 0, prev_hash = 0)
 
+    # Create block
     def construct_block(self, proof_no, prev_hash):
         block = Block(
-            index=len(self.chain),
-            proof_no=proof_no,
-            prev_hash=prev_hash,
-            data=self.current_data)
+            index = len(self.chain),
+            proof_no = proof_no,
+            prev_hash = prev_hash,
+            data = self.current_data)
         self.current_data = []
 
         self.chain.append(block)
         return block
 
+    # Check validation
     @staticmethod
     def check_validity(block, prev_block):
         if prev_block.index + 1 != block.index:
@@ -64,6 +86,7 @@ class BlockChain:
 
         return True
 
+    # New data
     def new_data(self, sender, recipient, quantity):
         self.current_data.append({
             'sender': sender,
@@ -72,9 +95,15 @@ class BlockChain:
         })
         return True
 
+    # Proof
     @staticmethod
     def proof_of_work(last_proof):
-        '''this simple algorithm identifies a number f' such that hash(ff') contain 4 leading zeroes
+        '''
+         Proof of work is a concept that prevents the blockchain from abuse. Simply, its objective is to identify a number that solves a problem after a certain amount of computing work is done.
+         If the difficulty level of identifying the number is high, it discourages spamming and tampering with the blockchain.
+         In this case, we’ll use a simple algorithm that discourages people from mining blocks or creating blocks easily.
+
+         this simple algorithm identifies a number f' such that hash(ff') contain 4 leading zeroes
          f is the previous f'
          f' is the new proof
         '''
@@ -92,17 +121,18 @@ class BlockChain:
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "0000"
 
+    # Latest block
     @property
     def latest_block(self):
         return self.chain[-1]
 
+    # Mining block
     def block_mining(self, details_miner):
 
         self.new_data(
-            sender="0",  #it implies that this node has created a new block
-            receiver=details_miner,
-            quantity=
-            1,  #creating a new block (or identifying the proof number) is awarded with 1
+            sender = "0",  #it implies that this node has created a new block
+            receiver = details_miner,
+            quantity = 1,  #creating a new block (or identifying the proof number) is awarded with 1
         )
 
         last_block = self.latest_block
@@ -115,9 +145,11 @@ class BlockChain:
 
         return vars(block)
 
+    # Create node
     def create_node(self, address):
         self.nodes.add(address)
         return True
+
 
     @staticmethod
     def obtain_block_object(block_data):
@@ -128,8 +160,15 @@ class BlockChain:
             block_data['proof_no'],
             block_data['prev_hash'],
             block_data['data'],
-            timestamp=block_data['timestamp'])
+            timestamp = block_data['timestamp'])
 
+
+# Transaction
+class Transaction:
+    def __init__(self,from_wallet,to_wallet,amount):
+        self.from_wallet = from_wallet
+        self.to_wallet = to_wallet
+        self.amount = amount
 
 
 

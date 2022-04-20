@@ -22,21 +22,14 @@ class Block:
     # Calculate hash
     @property
     def calculate_hash(self):
-        block_of_string = "{}{}{}{}{}".format(
-                                                self.index, self.proof_no,
-                                                self.prev_hash, self.data,
-                                                self.timestamp
-                                            )
+        block_of_string = f"{self.index}{self.proof_no}{self.prev_hash}{self.data}{self.timestamp}"
+
 
         return hashlib.sha256(block_of_string.encode()).hexdigest()
 
     # repr
     def __repr__(self):
-        return "{} - {} - {} - {} - {}".format(
-                                                self.index, self.proof_no,
-                                                self.prev_hash, self.data,
-                                                self.timestamp
-                                               )
+        return f"{self.index} - {self.proof_no} - {self.prev_hash} - {self.data} - {self.timestamp}"
 
 
 # Chaining blocks
